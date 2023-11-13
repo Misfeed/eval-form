@@ -1,0 +1,106 @@
+<html>
+<head>
+<script language="JavaScript"> 
+window.onerror = function (err, file, line) {
+	//can be set to alert,hide or default (empty string)
+	var errors = "alert";  
+	
+	switch(errors)
+	{
+		case "alert":
+			alert('JavaScript Error: ' + err + '\n' +
+			'In file: ' + file + '\n' +
+			'At line: ' + line);
+			return true;
+			break;
+		case "hide":
+			return true;
+			break;		
+		default:
+			return false; //default handler
+	}
+}
+ 
+ 
+ 
+function runJS()
+{
+	var myform = document.getElementById("myform");
+	var output = eval(myform.mytext.value);
+	showJS = escapeVal(myform.mytext,"<br />");
+	begDiv = '<div style="font-family:Verdana, Arial, Helvetica, sans-serif; font-size:x-large;">';
+	output = '<h4 align="center">Output:</h4>' + begDiv + output + '</div>';
+	output += '<div align="center"><input type="button" style="font-family:Verdana, Arial, Helvetica, sans-serif;" onclick="self.close();" value="Close"></div>';
+	if(myform.alert.checked)
+	{
+		//myWindow = window.open("", "tinyWindow", 'toolbar,width=400,height=200');
+		var w = 480, h = 340;
+		if (document.all || document.layers) {
+		   w = screen.availWidth;
+		   h = screen.availHeight;
+		}
+		var popW = 600, popH = 200;
+		var leftPos = (w-popW)/2, topPos = (h-popH)/2;
+		//adjust down the screen a bit:
+		topPos *= 1.8;
+		topPos = Math.round(topPos);
+		myWindow = window.open("", "theWindow", 'width=' + popW + ',height=' + popH + ',top=' + topPos + ',left=' + leftPos + ',scrollbars=yes,resize=yes');
+		myWindow.document.write(output);
+		myWindow.document.bgColor="lightblue";
+		myWindow.focus();
+		myWindow.document.close();
+		
+	}
+}
+ 
+function escapeVal(textarea,replaceWith)
+{
+	//code adapted from jennifermadden.com 
+	//textarea is reference to that object, replaceWith is string that will replace the encoded return
+	myReturn = escape(textarea.value);  // encode textarea string's carriage returns
+	
+	for(i=0; i<myReturn.length; i++)
+	{ 
+		//loop through string, replacing carriage return encoding with HTML break tag
+		
+		if(myReturn.indexOf("%0D%0A") > -1){ 
+			//Windows encodes returns as \r\n hex
+			myReturn=myReturn.replace("%0D%0A",replaceWith)
+		}
+		else if(myReturn.indexOf("%0A") > -1){ 
+			//Unix encodes returns as \n hex
+			myReturn=myReturn.replace("%0A",replaceWith)
+		}
+		else if(myReturn.indexOf("%0D") > -1){ 
+			//Macintosh encodes returns as \r hex
+			myReturn=myReturn.replace("%0D",replaceWith)
+		}
+	}
+	myReturn = unescape(myReturn);
+	return myReturn;
+}	
+ 
+</script>
+<style type="text/css"> 
+.formtext { 
+ font-size:x-large;
+ font-family:Verdana, Arial, Helvetica, sans-serif; 
+ background-color: #dddddd; 
+ border: 1px solid #666666; 
+}
+</style>
+ 
+ 
+</head>
+<body>
+<h3 align="center">JS Eval Form version 1xb (xb stands for EXTRA big!!)</h3>
+<form name="myform" id="myform" method="post">
+<textarea name="mytext" rows="16" cols="85" class="formtext">
+</textarea><br />
+<input type="checkbox" name="alert" checked="checked">Output to window.
+<input type="button" value="eval it!" name="clickit" onclick="runJS()">
+</form>
+<p><a href="javascript:void(0);" onclick="myform.mytext.value='';myform.mytext.focus();">Clear</a><p>
+<div id="mydiv"> Enter some JS in the textarea about, and hit "eval it" to run it. <em>(this is a div with an id of mydiv)</em></div>
+</body>
+</html>
